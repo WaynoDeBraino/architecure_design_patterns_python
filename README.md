@@ -64,6 +64,10 @@ graph TB
     bands --> names[ACTIVITY_FOR_API]
     names -->|calls| macros[Macros API]
     Handlers -->|each call updates| requests
+        postAct -->|reads| a6[activities.json]
+    postLog -->|reads| logs5[logs.json]
+    postLog -->|reads| notes3[notices.json]
+    undo -->|reads| logs6[logs.json]
 ```
 
 ## What it does
