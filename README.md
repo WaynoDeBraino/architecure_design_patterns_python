@@ -23,6 +23,7 @@ This is the as-is picture. Update it when a refactor moves a responsibility out 
 ```mermaid
 graph TB
     client[HTTP client]
+        logger[decorators/request_log.py]
 
     subgraph Handlers
         getAct[GET activities]
@@ -36,7 +37,8 @@ graph TB
         targets[GET targets]
     end
 
-    client --> Handlers
+    client --> logger
+    logger --> Handlers
     getAct ~~~ postAct
     postAct ~~~ postLog
     postLog ~~~ undo
@@ -56,14 +58,14 @@ graph TB
     getCal -->|reads| logs3[logs.json]
     getCal -->|reads| a4[activities.json]
     postUser -->|writes| user1[user.json]
-    stats -->|reads| requests[REQUESTS]
+        stats -->|reads| requests[Requests in singleton/requests.py]
     targets -->|reads| user2[user.json]
     targets -->|reads| logs4[logs.json]
     targets -->|reads| a5[activities.json]
     targets --> bands[LIFESTYLE_ACTIVITY]
     bands --> names[ACTIVITY_FOR_API]
     names -->|calls| macros[Macros API]
-    Handlers -->|each call updates| requests
+        logger -->|updates| requests
         postAct -->|reads| a6[activities.json]
     postLog -->|reads| logs5[logs.json]
     postLog -->|reads| notes3[notices.json]
