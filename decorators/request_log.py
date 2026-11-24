@@ -3,19 +3,20 @@ from functools import wraps
 
 from flask import request
 
-from data.dict.dict import REQUESTS
+from singleton.requests import Requests
 
 
 def request_log(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
+        requests = Requests.get_instance()
         started = datetime.now()
-        REQUESTS["count"] = REQUESTS["count"] + 1
-        REQUESTS["last_path"] = request.path
+        requests.count = requests.count + 1
+        requests.last_path = request.path
         try:
             return view(*args, **kwargs)
         finally:
-            REQUESTS["last_seconds"] = (datetime.now() - started).total_seconds()
-            print("request", REQUESTS["count"], request.path, REQUESTS["last_seconds"])
+            requests.last_seconds = (datetime.now() - started).total_seconds()
+            print("request", requests.count, request.path, requests.last_seconds)
 
     return wrapper

@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 
 from flask import Flask, jsonify, request
 
-from data.dict.dict import REQUESTS
 from decorators.request_log import request_log
+from singleton.requests import Requests
 
 app = Flask(__name__)
 
@@ -212,14 +212,14 @@ def list_notices():
 @request_log
 def stats():
     print("got a stats request")
+    requests = Requests.get_instance()
     return jsonify(
         {
-            "count": REQUESTS["count"],
-            "last_path": REQUESTS["last_path"],
-            "last_seconds": REQUESTS["last_seconds"],
+            "count": requests.count,
+            "last_path": requests.last_path,
+            "last_seconds": requests.last_seconds,
         }
     )
-
 
 @app.route("/activities", methods=["GET"])
 @request_log
@@ -229,6 +229,7 @@ def list_activities():
     activities = json.loads(activities_file.read())
     activities_file.close()
     return jsonify(activities)
+
 
 
 @app.route("/activities", methods=["POST"])
