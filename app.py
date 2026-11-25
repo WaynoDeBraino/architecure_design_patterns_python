@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 from flask import Flask, jsonify, request
 
+from builders.calories_response import CaloriesResponseBuilder
 from decorators.request_log import request_log
 from factories.records import (
     burned_calories,
@@ -306,16 +307,11 @@ def calories():
             create_calories_log(item.type, item.minutes, item.logged_at, burned)
         )
 
-    return jsonify(
-        {
-            "period": incoming.period,
-            "from": start.strftime("%Y-%m-%dT%H:%M:%S"),
-            "to": now.strftime("%Y-%m-%dT%H:%M:%S"),
-            "total_calories": total,
-            "count": len(matched),
-            "logs": [asdict(row) for row in matched],
-        }
-    )
+    builder = CaloriesResponseBuilder()
+    builder.set_window(incoming.period, start, now)
+    builder.add_totals(total, len(matched))
+    builder.add_logs(matched)
+    return jsonify(builder.get_result().to_dict())
 
 
 @app.route("/user", methods=["POST"])

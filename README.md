@@ -62,14 +62,19 @@ graph TB
     targets -->|reads| user2[user.json]
     targets -->|reads| logs4[logs.json]
     targets -->|reads| a5[activities.json]
-    targets --> bands[LIFESTYLE_ACTIVITY]
-    bands --> names[ACTIVITY_FOR_API]
+    targets --> bands[LIFESTYLE_ACTIVITY in models/const.py]
+    bands --> names[ACTIVITY_FOR_API in models/const.py]
     names -->|calls| macros[Macros API]
         logger -->|updates| requests
         postAct -->|reads| a6[activities.json]
     postLog -->|reads| logs5[logs.json]
     postLog -->|reads| notes3[notices.json]
     undo -->|reads| logs6[logs.json]
+    Handlers -->|create records| factories[factories/records.py]
+    getCal -->|assembles with| builder[builders/calories_response.py]
+    factories --> data[models/data.py]
+    builder --> data
+    data --> enums[models/enums.py]
 ```
 
 ## What it does
